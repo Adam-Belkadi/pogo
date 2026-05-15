@@ -1,9 +1,6 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package main
 
-import "github.com/Adam-Belkadi/deeper/cmd"
+import cmd "github.com/Adam-Belkadi/pogo/cmd"
 
 func main() {
 	cmd.Execute()

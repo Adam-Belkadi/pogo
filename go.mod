@@ -1,4 +1,4 @@
-module github.com/Adam-Belkadi/deeper
+module github.com/Adam-Belkadi/pogo
 
 go 1.25.0
 
