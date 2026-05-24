@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -30,40 +29,57 @@ func Scan(target string) {
 		fmt.Println("Error:", err)
 		return
 	}
-	fmt.Println(evaluated_target)
-
+	
 	fmt.Printf("\n[# Scanning Target]---- %s\n", target)
+	fmt.Println(evaluated_target)
 
 	workerCount := 100
 
-	ports := make(chan int, workerCount)
+	// ports := make(chan int, workerCount)
 
-	var wg sync.WaitGroup
-	for i := 0; i < workerCount; i++ {
-		wg.Add(1)
+	// var wg sync.WaitGroup
+	// for i := 0; i < workerCount; i++ {
+	// 	wg.Add(1)
 
-		go func() {
-			defer wg.Done()
+	// 	go func() {
+	// 		defer wg.Done()
 			
-			for port := range ports {
-				scan_port(evaluated_target, port)
-			}
-		} ()
+	// 		for port := range ports {
+	// 			scan_port(evaluated_target, port)
+	// 		}
+	// 	} ()
+	// }
+
+	// for p := 1; p <= 1024; p++ {
+    // 	ports <- p
+	// }
+
+	// close(ports)
+
+	// wg.Wait()
+
+	// build task list with port IDs 1..1024
+	tasks := make([]Task, 1024)
+	for i := range tasks {
+		tasks[i] = Task{ID: i + 1}
 	}
 
-	for p := 1; p <= 1024; p++ {
-    	ports <- p
+	wp := WorkerPool{
+		Tasks:       tasks,
+		concurrency: workerCount,
 	}
 
-	close(ports)
-
-	wg.Wait()
+	wp.Run(evaluated_target)
+	fmt.Printf("\n[# Scan Complete]---- %s\n", target)
 }
 
 func scan_port(target string, port int) {
-
-
-	address := fmt.Sprintf("%s:%d", target, port)
+	var address string
+	if strings.Contains(target, ":") {
+		address = fmt.Sprintf("[%s]:%d", target, port)
+	} else {
+		address = fmt.Sprintf("%s:%d", target, port)
+	}
 
 	conn, err := net.DialTimeout("tcp", address, 500*time.Millisecond)
 	if err != nil {
