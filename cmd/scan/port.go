@@ -18,15 +18,13 @@ var (
 var portCmd = &cobra.Command{
 	Use:   "port",
 	Short: "This ports a remote url",
-	Long: `	`,
+	Long:  `	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("port called")
 		scanner.Scan(urlPath)
 	},
 }
 
 func init() {
-
 	portCmd.Flags().StringVarP(&urlPath, "url", "u", "", "The url to port")
 
 	if err := portCmd.MarkFlagRequired("url"); err != nil {

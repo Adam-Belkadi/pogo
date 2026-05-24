@@ -11,7 +11,7 @@ func check_ip(target string) (string, error) {
 	// Try parsing as IP
 	ip := net.ParseIP(target)
 	if ip != nil {
-		return ip.String(), nil 
+		return ip.String(), nil
 	}
 
 	// Otherwise resolve hostname
@@ -29,9 +29,8 @@ func Scan(target string) {
 		fmt.Println("Error:", err)
 		return
 	}
-	
-	fmt.Printf("\n[# Scanning Target]---- %s\n", target)
-	fmt.Println(evaluated_target)
+
+	fmt.Printf("[#] Scanning Target: %s --- %s\n\n", evaluated_target, target)
 
 	workerCount := 100
 
@@ -43,7 +42,7 @@ func Scan(target string) {
 
 	// 	go func() {
 	// 		defer wg.Done()
-			
+
 	// 		for port := range ports {
 	// 			scan_port(evaluated_target, port)
 	// 		}
@@ -51,7 +50,7 @@ func Scan(target string) {
 	// }
 
 	// for p := 1; p <= 1024; p++ {
-    // 	ports <- p
+	// 	ports <- p
 	// }
 
 	// close(ports)
@@ -70,7 +69,7 @@ func Scan(target string) {
 	}
 
 	wp.Run(evaluated_target)
-	fmt.Printf("\n[# Scan Complete]---- %s\n", target)
+	fmt.Printf("\n\n[#] Scan Complete: %s --- %s\n", evaluated_target, target)
 }
 
 func scan_port(target string, port int) {
@@ -88,7 +87,24 @@ func scan_port(target string, port int) {
 	}
 	defer conn.Close()
 
-	fmt.Printf("[+] Port %d is open\n", port)
+	conn.SetReadDeadline(time.Now().Add(1 * time.Second))
+
+	buffer := make([]byte, 1024)
+
+	n, err := conn.Read(buffer)
+	if err != nil {
+		fmt.Printf("[+] Port %d is open: Unable to detect version", port)
+		return
+	}
+
+	banner := string(buffer[:n])
+
+	if len(banner) > 0 {
+		fmt.Printf("[+] Port %d is open: %s", port, banner)
+	} else {
+		fmt.Printf("[+] Port %d is open: No banner retrieved", port)
+	}
+
 }
 
 func main2() {
@@ -106,4 +122,3 @@ func main2() {
 	}
 
 }
-
