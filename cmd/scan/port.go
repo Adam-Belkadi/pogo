@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	urlPath string
+	urlPath     string
+	port_string string
 )
 
 // portCmd represents the port command
@@ -20,7 +21,7 @@ var portCmd = &cobra.Command{
 	Short: "This ports a remote url",
 	Long:  `	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		scanner.Scan(urlPath)
+		scanner.Scan(urlPath, port_string)
 	},
 }
 
@@ -30,6 +31,8 @@ func init() {
 	if err := portCmd.MarkFlagRequired("url"); err != nil {
 		fmt.Println(err)
 	}
+
+	portCmd.Flags().StringVarP(&port_string, "port", "p", "most used", "ports to scan")
 
 	ScanCmd.AddCommand(portCmd)
 
