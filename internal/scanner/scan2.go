@@ -39,6 +39,12 @@ func check_port(port_string string) []int {
 				ports = append(ports, port)
 			}
 		}
+	} else if port_string == "-" {
+		ports = make([]int, 65535)
+		for i := range ports {
+			ports[i] = i + 1
+		}
+		fmt.Println("[#] Scanning all ports (1-65535)...")
 	} else if strings.Contains(port_string, "-") {
 		ports = make([]int, 0)
 		parts := strings.Split(port_string, "-")
